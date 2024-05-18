@@ -36,7 +36,7 @@ func main() {
 
 	//for db connection, reading the DSN value from db-dsn command line param into config struct,
 	//and add default DSN in there is no param is provided.
-	flag.StringVar(&cfg.db.dsn, "db-dsn", "postgres://greenlight:pa55word@localhost/greenlight", "PostgreSQL DSN")
+	flag.StringVar(&cfg.db.dsn, "db-dsn", os.Getenv("GREENLIGHT_DB_DSN"), "PostgreSQL DSN")
 
 	flag.Parse()
 
@@ -66,7 +66,7 @@ func main() {
 	}
 
 	logger.Printf("starting %s server on %s", cfg.env, srv.Addr)
-	err := srv.ListenAndServe()
+	err = srv.ListenAndServe()
 	logger.Fatal(err)
 }
 
