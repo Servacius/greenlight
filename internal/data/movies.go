@@ -23,6 +23,8 @@ type MovieModel struct {
 	DB *sql.DB
 }
 
+type MockMovieModel struct{}
+
 func ValidateMovie(v *validator.Validator, movie *Movie) {
 	v.Check(movie.Title != "", "title", "must be provided")
 	v.Check(len(movie.Title) <= 500, "title", "must not be more than 500 bytes long")
@@ -62,18 +64,18 @@ func (m Movie) MarshalJSON() ([]byte, error) {
 	return json.Marshal(aux)
 }
 
-func (m MovieModel) Insert(movie *Movie) error {
+func (m MockMovieModel) Insert(movie *Movie) error {
 	return nil
 }
 
-func (m MovieModel) Get(id int64) (*Movie, error) {
+func (m MockMovieModel) Get(id int64) (*Movie, error) {
 	return nil, nil
 }
 
-func (m MovieModel) Update(movie *Movie) error {
+func (m MockMovieModel) Update(movie *Movie) error {
 	return nil
 }
 
-func (m MovieModel) Delete(id int64) error {
+func (m MockMovieModel) Delete(id int64) error {
 	return nil
 }
