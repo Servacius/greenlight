@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/lib/pq"
 	"greenlight.joko.net/internal/validator"
 )
 
@@ -62,6 +63,18 @@ func (m Movie) MarshalJSON() ([]byte, error) {
 	}
 
 	return json.Marshal(aux)
+}
+
+func (m MovieModel) Insert(movie *Movie) error {
+	fmt.Printf("Movie here: %+v\n", movie)
+	query := `
+	INSERT INTO movies (title, year, runtime, genres)
+	VALUES ($1, $2, $3, $4)
+	RETURNING id, created_at, version`
+
+	args := []interface{}{movie.Title, movie.Runtime, pq.Array(movie.Genres)}
+
+	return m.DB.QueryRow(query, args...).Scan(&movie.ID, &movie.CreatedAt, &movie.Version)
 }
 
 func (m MockMovieModel) Insert(movie *Movie) error {

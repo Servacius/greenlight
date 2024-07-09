@@ -17,12 +17,6 @@ type Models struct {
 	}
 }
 
-// func NewMockModels(db *sql.DB) Models {
-// 	return Models{
-// 		Movies: MovieModel{DB: db},
-// 	}
-// }
-
 func NewMockModels() Models {
 	return Models{
 		Movies: MockMovieModel{},
