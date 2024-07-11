@@ -2,9 +2,7 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"net/http"
-	"os"
 	"time"
 
 	"greenlight.joko.net/internal/data"
@@ -34,7 +32,6 @@ func (app *application) showMovieHandler(w http.ResponseWriter, r *http.Request)
 }
 
 func (app *application) createMovieHandler(w http.ResponseWriter, r *http.Request) {
-	logger := log.New(os.Stdout, "", log.Ldate|log.Ltime)
 	var input struct {
 		Title   string       `json:"title"`
 		Year    int32        `json:"year"`
@@ -44,7 +41,6 @@ func (app *application) createMovieHandler(w http.ResponseWriter, r *http.Reques
 
 	err := app.readJSON(w, r, &input)
 	if err != nil {
-		logger.Println("Error reading JSON:", err)
 		app.badRequestResponse(w, r, err)
 		return
 	}
@@ -59,14 +55,12 @@ func (app *application) createMovieHandler(w http.ResponseWriter, r *http.Reques
 	v := validator.New()
 
 	if data.ValidateMovie(v, movie); !v.Valid() {
-		logger.Println("Validation failed:", v.Errors)
 		app.failedValidationResponse(w, r, v.Errors)
 		return
 	}
-
+	// fmt.Printf("Movie here: %+v\n", movie)
 	err = app.models.Movies.Insert(movie)
 	if err != nil {
-		logger.Println("Error inserting movie:", err)
 		app.serverErrorResponse(w, r, err)
 		return
 	}
@@ -76,9 +70,6 @@ func (app *application) createMovieHandler(w http.ResponseWriter, r *http.Reques
 
 	err = app.writeJSON(w, http.StatusCreated, envelope{"movie": movie}, headers)
 	if err != nil {
-		logger.Println("Error writing JSON:", err)
 		app.serverErrorResponse(w, r, err)
 	}
-
-	logger.Println("Handler finished")
 }
