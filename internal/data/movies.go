@@ -3,6 +3,7 @@ package data
 import (
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"time"
 
@@ -77,18 +78,50 @@ func (m MovieModel) Insert(movie *Movie) error {
 	return m.DB.QueryRow(query, args...).Scan(&movie.ID, &movie.CreatedAt, &movie.Version)
 }
 
-func (m MockMovieModel) Insert(movie *Movie) error {
-	return nil
+func (m MovieModel) Get(id int64) (*Movie, error) {
+	if id < 1 {
+		return nil, ErrRecordNotFound
+	}
+
+	query := `SELECT id, created_at, title, year, runtime, genres, version 
+			FROM movies 
+			WHERE id = $1`
+	var movie Movie
+
+	err := m.DB.QueryRow(query, id).Scan(
+		&movie.ID,
+		&movie.CreatedAt,
+		&movie.Title,
+		&movie.Year,
+		&movie.Runtime,
+		pq.Array(&movie.Genres),
+		&movie.Version,
+	)
+
+	if err != nil {
+		switch {
+		case errors.Is(err, sql.ErrNoRows):
+			return nil, ErrRecordNotFound
+		default:
+			return nil, err
+		}
+	}
+
+	return &movie, nil
 }
 
-func (m MockMovieModel) Get(id int64) (*Movie, error) {
-	return nil, nil
-}
+// func (m MockMovieModel) Insert(movie *Movie) error {
+// 	return nil
+// }
 
-func (m MockMovieModel) Update(movie *Movie) error {
-	return nil
-}
+// func (m MockMovieModel) Get(id int64) (*Movie, error) {
+// 	return nil, nil
+// }
 
-func (m MockMovieModel) Delete(id int64) error {
-	return nil
-}
+// func (m MockMovieModel) Update(movie *Movie) error {
+// 	return nil
+// }
+
+// func (m MockMovieModel) Delete(id int64) error {
+// 	return nil
+// }
