@@ -16,7 +16,7 @@ type Movie struct {
 	CreatedAt time.Time `json:"-"`
 	Title     string    `json:"title"`
 	Year      int32     `json:"year,omitempty"`
-	Runtime   Runtime   `json:"json":"runtime,omitempty"`
+	Runtime   Runtime   `json:"runtime,omitempty"`
 	Genres    []string  `json:"genres,omitempty"`
 	Version   int32     `json:"version"`
 }
@@ -67,7 +67,6 @@ func (m Movie) MarshalJSON() ([]byte, error) {
 }
 
 func (m MovieModel) Insert(movie *Movie) error {
-	fmt.Printf("Insert here: %+v\n", movie)
 	query := `
 	INSERT INTO movies (title, year, runtime, genres)
 	VALUES ($1, $2, $3, $4)
@@ -86,6 +85,7 @@ func (m MovieModel) Get(id int64) (*Movie, error) {
 	query := `SELECT id, created_at, title, year, runtime, genres, version 
 			FROM movies 
 			WHERE id = $1`
+
 	var movie Movie
 
 	err := m.DB.QueryRow(query, id).Scan(
