@@ -53,14 +53,22 @@ func (m Movie) MarshalJSON() ([]byte, error) {
 		runtime = fmt.Sprintf("%d mins", m.Runtime)
 	}
 
-	type MovieAlias Movie
+	// type MovieAlias Movie
 
 	aux := struct {
-		MovieAlias
-		Runtime string `json:"runtime,omitempty"`
+		ID      int64    `json:"id"`
+		Title   string   `json:"title"`
+		Year    int32    `json:"year,omitempty"`
+		Runtime string   `json:"runtime,omitempty"` // This is a string.
+		Genres  []string `json:"genres,omitempty"`
+		Version int32    `json:"version"`
 	}{
-		MovieAlias: MovieAlias{},
-		Runtime:    runtime,
+		ID:      m.ID,
+		Title:   m.Title,
+		Year:    m.Year,
+		Runtime: runtime, // Note that we assign the value from the runtime variable here.
+		Genres:  m.Genres,
+		Version: m.Version,
 	}
 
 	return json.Marshal(aux)
@@ -108,6 +116,23 @@ func (m MovieModel) Get(id int64) (*Movie, error) {
 	}
 
 	return &movie, nil
+}
+
+func (m MovieModel) Update(movie *Movie) error {
+	query := `
+			UPDATE movies SET title = $1, year = $2, runtime = $3, genres = $4, version = version + 1
+			WHERE id = $5
+			RETURNING version`
+
+	args := []interface{}{
+		movie.Title,
+		movie.Year,
+		movie.Runtime,
+		pq.Array(movie.Genres),
+		movie.ID,
+	}
+
+	return m.DB.QueryRow(query, args...).Scan(&movie.Version)
 }
 
 // func (m MockMovieModel) Insert(movie *Movie) error {
