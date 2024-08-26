@@ -11,6 +11,8 @@ import (
 	"greenlight.joko.net/internal/validator"
 )
 
+var AnonymousUser = &User{}
+
 type User struct {
 	// use - in json to prevent the password and version appearing in any outpu when we encode it to JSON
 	ID        int64     `json:"id"`
@@ -216,4 +218,8 @@ func (m UserModel) GetForToken(tokenScope, tokenPlaintext string) (*User, error)
 	}
 
 	return &user, nil
+}
+
+func (u *User) IsAnonymous() bool {
+	return u == AnonymousUser
 }
