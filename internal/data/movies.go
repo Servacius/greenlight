@@ -94,7 +94,7 @@ func (m MovieModel) Get(id int64) (*Movie, error) {
 		return nil, ErrRecordNotFound
 	}
 
-	query := `SELECT pg_sleep(10), id, created_at, title, year, runtime, genres, version 
+	query := `SELECT id, created_at, title, year, runtime, genres, version 
 			FROM movies 
 			WHERE id = $1`
 
