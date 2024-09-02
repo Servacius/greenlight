@@ -81,7 +81,7 @@ func (app *application) readJSON(w http.ResponseWriter, r *http.Request, dst int
 			return fmt.Errorf("body contains unknown key %s", fieldName)
 
 		case err.Error() == "http: request body too large":
-			return fmt.Errorf("body contains unknown key %s", maxBytes)
+			return fmt.Errorf("body contains unknown key %d bytes", maxBytes)
 
 		case errors.As(err, &invalidUnmarshalError):
 			panic(err)
