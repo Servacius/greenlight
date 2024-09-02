@@ -62,7 +62,7 @@ func main() {
 
 	//for db connection, reading the DSN value from db-dsn command line param into config struct,
 	//and add default DSN in there is no param is provided.
-	flag.StringVar(&cfg.db.dsn, "db-dsn", os.Getenv("GREENLIGHT_DB_DSN"), "PostgreSQL DSN")
+	flag.StringVar(&cfg.db.dsn, "db-dsn", "", "PostgreSQL DSN")
 
 	// Reading the connection pool settings from command-line param into the config struct
 	flag.IntVar(&cfg.db.maxOpenConns, "db-max-open-conns", 25, "PostgreSQL max open connections")
